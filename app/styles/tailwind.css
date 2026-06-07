@@ -1,0 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700&display=swap");
+
+@import 'tailwindcss';
+
+@theme {
+  --color-agro-green: #012D1D;
+  --color-agro-dark: #191C1D;
+  --color-agro-body: #414844;
+  --color-agro-bg: #F8F9FA;
+  --color-agro-gray: #F3F4F5;
+  --color-agro-border: #C1C8C2;
+  --color-agro-brown: #7B5731;
+  --color-agro-brown-bg: rgba(123, 87, 49, 0.10);
+  --color-agro-green-bg: rgba(1, 45, 29, 0.10);
+
+  --font-sans: 'Inter', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+}
