@@ -18,15 +18,15 @@ export function ProductForm({
   const navigate = useNavigate();
   const {open} = useAside();
   return (
-    <div className="product-form">
+    <div className="flex flex-col gap-6 mb-8">
       {productOptions.map((option) => {
         // If there is only a single value in the option values, don't display the option
         if (option.optionValues.length === 1) return null;
 
         return (
-          <div className="product-options" key={option.name}>
-            <h5>{option.name}</h5>
-            <div className="product-options-grid">
+          <div className="flex flex-col gap-3" key={option.name}>
+            <h5 className="text-sm font-medium text-gray-900 uppercase tracking-wide">{option.name}</h5>
+            <div className="flex flex-wrap gap-2">
               {option.optionValues.map((value) => {
                 const {
                   name,
@@ -46,17 +46,18 @@ export function ProductForm({
                   // as an anchor tag
                   return (
                     <Link
-                      className="product-options-item"
+                      className={`min-w-[3.5rem] px-4 py-2 text-sm font-medium rounded-md border flex items-center justify-center transition-colors ${
+                        selected 
+                          ? 'border-gray-900 bg-gray-900 text-white' 
+                          : 'border-gray-300 bg-white text-gray-900 hover:bg-gray-50'
+                      }`}
                       key={option.name + name}
                       prefetch="intent"
                       preventScrollReset
                       replace
                       to={`/products/${handle}?${variantUriQuery}`}
                       style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
-                        opacity: available ? 1 : 0.3,
+                        opacity: available ? 1 : 0.4,
                       }}
                     >
                       <ProductOptionSwatch swatch={swatch} name={name} />
@@ -71,15 +72,14 @@ export function ProductForm({
                   return (
                     <button
                       type="button"
-                      className={`product-options-item${
-                        exists && !selected ? ' link' : ''
+                      className={`min-w-[3.5rem] px-4 py-2 text-sm font-medium rounded-md border flex items-center justify-center transition-colors ${
+                        selected 
+                          ? 'border-gray-900 bg-gray-900 text-white' 
+                          : 'border-gray-300 bg-white text-gray-900 hover:bg-gray-50'
                       }`}
                       key={option.name + name}
                       style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
-                        opacity: available ? 1 : 0.3,
+                        opacity: available ? 1 : 0.4,
                       }}
                       disabled={!exists}
                       onClick={() => {
@@ -97,29 +97,33 @@ export function ProductForm({
                 }
               })}
             </div>
-            <br />
           </div>
         );
       })}
-      <AddToCartButton
-        disabled={!selectedVariant || !selectedVariant.availableForSale}
-        onClick={() => {
-          open('cart');
-        }}
-        lines={
-          selectedVariant
-            ? [
-                {
-                  merchandiseId: selectedVariant.id,
-                  quantity: 1,
-                  selectedVariant,
-                },
-              ]
-            : []
-        }
-      >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
-      </AddToCartButton>
+      
+      <div className="mt-4">
+        <AddToCartButton
+          disabled={!selectedVariant || !selectedVariant.availableForSale}
+          onClick={() => {
+            open('cart');
+          }}
+          className="flex-1 w-full bg-[#012D1D] text-white py-4 px-6 rounded flex items-center justify-center gap-2 font-semibold hover:bg-[#023d27] transition-colors shadow-sm"
+          lines={
+            selectedVariant
+              ? [
+                  {
+                    merchandiseId: selectedVariant.id,
+                    quantity: 1,
+                    selectedVariant,
+                  },
+                ]
+              : []
+          }
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          {selectedVariant?.availableForSale ? 'Додати в кошик' : 'Немає в наявності'}
+        </AddToCartButton>
+      </div>
     </div>
   );
 }

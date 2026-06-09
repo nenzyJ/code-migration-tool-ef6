@@ -188,7 +188,7 @@ export default function Index() {
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.name}
-                to="/catalog"
+                to="/product"
                 className="flex flex-col rounded border border-agro-border bg-agro-bg overflow-hidden hover:shadow-md transition-shadow group"
               >
                 <div className="h-48 overflow-hidden bg-[#E7E8E9]">

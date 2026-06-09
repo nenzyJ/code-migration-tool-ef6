@@ -69,29 +69,44 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
-      <PaginatedResourceSection<ProductItemFragment>
-        connection={collection.products}
-        resourcesClassName="products-grid"
-      >
-        {({node: product, index}) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
+    <div className="bg-white font-sans text-agro-dark">
+      <section className="py-20 border-b border-agro-border/30 bg-agro-bg">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 text-center">
+          <h1 className="font-montserrat font-bold text-4xl sm:text-5xl text-agro-dark mb-4">
+            {collection.title}
+          </h1>
+          {collection.description && (
+            <p className="text-agro-body text-base sm:text-lg max-w-[800px] mx-auto leading-7">
+              {collection.description}
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section className="py-16">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16">
+          <PaginatedResourceSection<ProductItemFragment>
+            connection={collection.products}
+            resourcesClassName="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          >
+            {({node: product, index}) => (
+              <ProductItem
+                key={product.id}
+                product={product}
+                loading={index < 8 ? 'eager' : undefined}
+              />
+            )}
+          </PaginatedResourceSection>
+          <Analytics.CollectionView
+            data={{
+              collection: {
+                id: collection.id,
+                handle: collection.handle,
+              },
+            }}
           />
-        )}
-      </PaginatedResourceSection>
-      <Analytics.CollectionView
-        data={{
-          collection: {
-            id: collection.id,
-            handle: collection.handle,
-          },
-        }}
-      />
+        </div>
+      </section>
     </div>
   );
 }

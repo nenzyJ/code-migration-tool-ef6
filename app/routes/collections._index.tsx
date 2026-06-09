@@ -46,23 +46,43 @@ export default function Collections() {
   const {collections} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collections">
-      <h1>Collections</h1>
-      <PaginatedResourceSection<CollectionFragment>
-        connection={collections}
-        resourcesClassName="collections-grid"
-      >
-        {({node: collection, index}) => (
-          <CollectionItem
-            key={collection.id}
-            collection={collection}
-            index={index}
-          />
-        )}
-      </PaginatedResourceSection>
+    <div className="bg-white font-sans text-agro-dark">
+      <section className="py-20 border-b border-agro-border/30 bg-agro-bg">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 text-center">
+          <h1 className="font-montserrat font-bold text-4xl sm:text-5xl text-agro-dark mb-4">
+            Категорії товарів
+          </h1>
+          <p className="text-agro-body text-base sm:text-lg max-w-[800px] mx-auto leading-7">
+            Оберіть необхідну категорію для перегляду товарів
+          </p>
+        </div>
+      </section>
+
+      <section className="py-16">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16">
+          <PaginatedResourceSection<CollectionFragment>
+            connection={collections}
+            resourcesClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {({node: collection, index}) => (
+              <CollectionItem
+                key={collection.id}
+                collection={collection}
+                index={index}
+              />
+            )}
+          </PaginatedResourceSection>
+        </div>
+      </section>
     </div>
   );
 }
+
+const ArrowRight = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="flex-shrink-0">
+    <path d="M12.175 9H0V7H12.175L6.575 1.4L8 0L16 8L8 16L6.575 14.6L12.175 9Z" fill="#012D1D"/>
+  </svg>
+);
 
 function CollectionItem({
   collection,
@@ -73,21 +93,32 @@ function CollectionItem({
 }) {
   return (
     <Link
-      className="collection-item"
+      className="flex flex-col rounded border border-agro-border bg-agro-bg overflow-hidden hover:shadow-md transition-shadow group"
       key={collection.id}
       to={`/collections/${collection.handle}`}
       prefetch="intent"
     >
-      {collection?.image && (
-        <Image
-          alt={collection.image.altText || collection.title}
-          aspectRatio="1/1"
-          data={collection.image}
-          loading={index < 3 ? 'eager' : undefined}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h5>{collection.title}</h5>
+      <div className="h-48 overflow-hidden bg-[#E7E8E9]">
+        {collection?.image ? (
+          <Image
+            alt={collection.image.altText || collection.title}
+            data={collection.image}
+            loading={index < 3 ? 'eager' : undefined}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="(min-width: 45em) 400px, 100vw"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-agro-body/40 group-hover:scale-105 transition-transform duration-300">
+            Немає зображення
+          </div>
+        )}
+      </div>
+      <div className="flex items-center justify-between px-4 py-4">
+        <span className="font-montserrat font-semibold text-xl text-agro-dark leading-8 line-clamp-1">
+          {collection.title}
+        </span>
+        <ArrowRight />
+      </div>
     </Link>
   );
 }
