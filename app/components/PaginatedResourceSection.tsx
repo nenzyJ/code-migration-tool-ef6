@@ -21,17 +21,19 @@ export function PaginatedResourceSection<NodesType>({
         );
 
         return (
-          <div>
-            <PreviousLink>
-              {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
+          <div className="flex flex-col items-center gap-10">
+            <PreviousLink className="inline-flex items-center justify-center px-8 py-3 border-2 border-agro-green text-agro-green hover:bg-agro-green hover:text-white transition-colors rounded font-semibold text-sm tracking-[0.7px]">
+              {isLoading ? 'Завантаження...' : '↑ Попередні товари'}
             </PreviousLink>
+            
             {resourcesClassName ? (
-              <div className={resourcesClassName}>{resourcesMarkup}</div>
+              <div className={`w-full ${resourcesClassName}`}>{resourcesMarkup}</div>
             ) : (
-              resourcesMarkup
+              <div className="w-full">{resourcesMarkup}</div>
             )}
-            <NextLink>
-              {isLoading ? 'Loading...' : <span>Load more ↓</span>}
+            
+            <NextLink className="inline-flex items-center justify-center px-8 py-3 bg-agro-green text-white hover:bg-[#023d27] transition-colors rounded font-semibold text-sm tracking-[0.7px]">
+              {isLoading ? 'Завантаження...' : 'Показати ще ↓'}
             </NextLink>
           </div>
         );

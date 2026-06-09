@@ -35,6 +35,7 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
     }),
     // Add other queries here, so that they are loaded in parallel
   ]);
+  
   return {products};
 }
 
@@ -51,20 +52,34 @@ export default function Collection() {
   const {products} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>Products</h1>
-      <PaginatedResourceSection<CollectionItemFragment>
-        connection={products}
-        resourcesClassName="products-grid"
-      >
-        {({node: product, index}) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
-          />
-        )}
-      </PaginatedResourceSection>
+    <div className="bg-white font-sans text-agro-dark">
+      <section className="py-20 border-b border-agro-border/30 bg-agro-bg">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 text-center">
+          <h1 className="font-montserrat font-bold text-4xl sm:text-5xl text-agro-dark mb-4">
+            Всі товари
+          </h1>
+          <p className="text-agro-body text-base sm:text-lg max-w-[800px] mx-auto leading-7">
+            Повний каталог нашої продукції для професійного фермерства.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-16">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16">
+          <PaginatedResourceSection<CollectionItemFragment>
+            connection={products}
+            resourcesClassName="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          >
+            {({node: product, index}) => (
+              <ProductItem
+                key={product.id}
+                product={product}
+                loading={index < 8 ? 'eager' : undefined}
+              />
+            )}
+          </PaginatedResourceSection>
+        </div>
+      </section>
     </div>
   );
 }

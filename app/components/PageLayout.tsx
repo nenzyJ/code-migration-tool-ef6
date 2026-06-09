@@ -45,7 +45,7 @@ export function PageLayout({
           publicStoreDomain={publicStoreDomain}
         />
       )}
-      <main>{children}</main>
+      <main className="flex-grow flex flex-col">{children}</main>
       <Footer
         footer={footer}
         header={header}

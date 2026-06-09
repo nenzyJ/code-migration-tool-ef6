@@ -35,7 +35,7 @@ export function Header({
         {/* Desktop Navigation */}
         <HeaderMenu viewport="desktop" />
 
-        <HeaderMenuMobileToggle />
+        <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
       </div>
     </header>
   );
