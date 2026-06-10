@@ -50,14 +50,14 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const childrenMap = getLineItemChildrenMap(cart?.lines?.nodes ?? []);
 
   return (
-    <div className={className}>
+    <div className={`${className} h-full flex flex-col`}>
       <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
+      <div className={`cart-details flex flex-col flex-1 ${!linesCount ? 'hidden' : ''}`}>
         <p id="cart-lines" className="sr-only">
           Line items
         </p>
-        <div>
-          <ul aria-labelledby="cart-lines">
+        <div className="flex-1 overflow-y-auto px-4 py-2">
+          <ul aria-labelledby="cart-lines" className="divide-y divide-gray-100">
             {(cart?.lines?.nodes ?? []).map((line) => {
               // we do not render non-parent lines at the root of the cart
               if (
@@ -91,15 +91,25 @@ function CartEmpty({
 }) {
   const {close} = useAside();
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
+    <div hidden={hidden} className="flex flex-col items-center justify-center p-8 text-center min-h-[400px] h-full">
+      <div className="w-24 h-24 mb-6 bg-gray-50 rounded-full flex items-center justify-center text-gray-300">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="8" cy="21" r="1.5" />
+          <circle cx="19" cy="21" r="1.5" />
+          <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+        </svg>
+      </div>
+      <h3 className="text-xl font-semibold text-gray-800 mb-2">Ваш кошик порожній</h3>
+      <p className="text-gray-500 mb-8 max-w-[250px]">
+        Схоже, ви ще нічого не додали. Час розпочати покупки!
       </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
+      <Link 
+        to="/collections" 
+        onClick={close} 
+        prefetch="viewport"
+        className="px-8 py-3 bg-agro-green text-white font-medium rounded-lg hover:bg-agro-green/90 transition-colors shadow-sm w-full max-w-[280px]"
+      >
+        Перейти до каталогу
       </Link>
     </div>
   );
