@@ -59,14 +59,14 @@ export function Aside({
       role="dialog"
     >
       <button className="close-outside" onClick={close} />
-      <aside>
-        <header className="flex items-center justify-between border-b border-gray-100 px-6 h-[64px] bg-white">
+      <aside className="flex flex-col h-full">
+        <header className="flex-none flex items-center justify-between border-b border-gray-100 px-6 h-[64px] bg-white">
           <h3 className="text-agro-green uppercase text-xs font-bold tracking-wider m-0">{heading}</h3>
           <button className="close reset text-agro-green text-xl hover:opacity-100 opacity-70 transition-opacity" onClick={close} aria-label="Close">
             &#x2715;
           </button>
         </header>
-        <main>{children}</main>
+        <main className="flex-1 overflow-y-auto !m-0">{children}</main>
       </aside>
     </div>
   );
