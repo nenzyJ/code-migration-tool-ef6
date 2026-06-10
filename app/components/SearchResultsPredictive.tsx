@@ -203,9 +203,9 @@ function SearchResultsPredictiveProducts({
   if (!products.length) return null;
 
   return (
-    <div className="predictive-search-result" key="products">
-      <h5>Products</h5>
-      <ul>
+    <div className="border-t border-gray-200 pt-6 mt-4" key="products">
+      <h3 className="font-semibold text-sm text-gray-500 mb-4">ШВИДКИЙ ПЕРЕГЛЯД</h3>
+      <div className="space-y-4">
         {products.map((product) => {
           const productUrl = urlWithTrackingParams({
             baseUrl: `/products/${product.handle}`,
@@ -216,25 +216,31 @@ function SearchResultsPredictiveProducts({
           const price = product?.selectedOrFirstAvailableVariant?.price;
           const image = product?.selectedOrFirstAvailableVariant?.image;
           return (
-            <li className="predictive-search-result-item" key={product.id}>
-              <Link to={productUrl} onClick={closeSearch}>
+            <Link 
+              to={productUrl} 
+              onClick={closeSearch} 
+              key={product.id}
+              className="flex gap-4 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group"
+            >
+              <div className="w-16 h-16 rounded overflow-hidden flex-shrink-0 bg-gray-100">
                 {image && (
                   <Image
                     alt={image.altText ?? ''}
                     src={image.url}
-                    width={50}
-                    height={50}
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover"
                   />
                 )}
-                <div>
-                  <p>{product.title}</p>
-                  <small>{price && <Money data={price} />}</small>
-                </div>
-              </Link>
-            </li>
+              </div>
+              <div className="flex flex-col justify-center">
+                <span className="font-medium text-sm group-hover:text-agro-green transition-colors">{product.title}</span>
+                <span className="text-base font-bold text-gray-900">{price && <Money data={price} />}</span>
+              </div>
+            </Link>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }

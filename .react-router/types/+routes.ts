@@ -82,6 +82,9 @@ type Pages = {
   "/sitemap.xml": {
     params: {};
   };
+  "/api/featured": {
+    params: {};
+  };
   "/blogs": {
     params: {};
   };
@@ -143,7 +146,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/blogs/:blogHandle/:articleHandle" | "/api/:version/graphql.json" | "/sitemap/:type/:page.xml" | "/blogs/:blogHandle" | "/collections/:handle" | "/account/authorize" | "/collections" | "/policies/:handle" | "/products/:handle" | "/account/logout" | "/collections/all" | "/policies" | "/account/login" | "/discount/:code" | "/pages/:handle" | "/sitemap.xml" | "/blogs" | "/robots.txt" | "/account" | "/account/orders" | "/account/orders/:id" | "/account/addresses" | "/account/profile" | "/account/*" | "/catalog" | "/search" | "/cart" | "/cart/:lines" | "/*" | "/graphiql" | "/subrequest-profiler" | "/.well-known/appspecific/com.chrome.devtools.json";
+    page: "/" | "/blogs/:blogHandle/:articleHandle" | "/api/:version/graphql.json" | "/sitemap/:type/:page.xml" | "/blogs/:blogHandle" | "/collections/:handle" | "/account/authorize" | "/collections" | "/policies/:handle" | "/products/:handle" | "/account/logout" | "/collections/all" | "/policies" | "/account/login" | "/discount/:code" | "/pages/:handle" | "/sitemap.xml" | "/api/featured" | "/blogs" | "/robots.txt" | "/account" | "/account/orders" | "/account/orders/:id" | "/account/addresses" | "/account/profile" | "/account/*" | "/catalog" | "/search" | "/cart" | "/cart/:lines" | "/*" | "/graphiql" | "/subrequest-profiler" | "/.well-known/appspecific/com.chrome.devtools.json";
   };
   "routes/blogs.$blogHandle.$articleHandle.tsx": {
     id: "routes/blogs.$blogHandle.$articleHandle";
@@ -208,6 +211,10 @@ type RouteFiles = {
   "routes/[sitemap.xml].tsx": {
     id: "routes/[sitemap.xml]";
     page: "/sitemap.xml";
+  };
+  "routes/api.featured.tsx": {
+    id: "routes/api.featured";
+    page: "/api/featured";
   };
   "routes/blogs._index.tsx": {
     id: "routes/blogs._index";
@@ -309,6 +316,7 @@ type RouteModules = {
   "routes/discount.$code": typeof import("./app/routes/discount.$code.tsx");
   "routes/pages.$handle": typeof import("./app/routes/pages.$handle.tsx");
   "routes/[sitemap.xml]": typeof import("./app/routes/[sitemap.xml].tsx");
+  "routes/api.featured": typeof import("./app/routes/api.featured.tsx");
   "routes/blogs._index": typeof import("./app/routes/blogs._index.tsx");
   "routes/[robots.txt]": typeof import("./app/routes/[robots.txt].tsx");
   "routes/account": typeof import("./app/routes/account.tsx");
