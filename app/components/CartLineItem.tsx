@@ -35,44 +35,55 @@ export function CartLineItem({
   const childrenLabelId = `cart-line-children-${id}`;
 
   return (
-    <li key={id} className="cart-line">
-      <div className="cart-line-inner">
-        {image && (
+    <li key={id} className="flex gap-4 py-4 px-6 border-b border-gray-100 bg-white">
+      {image && (
+        <div className="shrink-0 w-20 h-20 bg-gray-50 flex items-center justify-center overflow-hidden">
           <Image
             alt={title}
             aspectRatio="1/1"
             data={image}
-            height={100}
+            height={80}
             loading="lazy"
-            width={100}
+            width={80}
+            className="object-cover mix-blend-multiply w-full h-full"
           />
-        )}
+        </div>
+      )}
 
-        <div>
-          <Link
-            prefetch="intent"
-            to={lineItemUrl}
-            onClick={() => {
-              if (layout === 'aside') {
-                close();
-              }
-            }}
-          >
-            <p>
-              <strong>{product.title}</strong>
-            </p>
-          </Link>
-          <ProductPrice price={line?.cost?.totalAmount} />
-          <ul>
-            {selectedOptions.map((option) => (
-              <li key={option.name}>
-                <small>
-                  {option.name}: {option.value}
-                </small>
-              </li>
-            ))}
-          </ul>
+      <div className="flex flex-col justify-between flex-1 min-w-0">
+        <div className="flex justify-between items-start gap-2">
+          <div className="min-w-0">
+            <Link
+              prefetch="intent"
+              to={lineItemUrl}
+              onClick={() => {
+                if (layout === 'aside') {
+                  close();
+                }
+              }}
+              className="text-[13px] font-bold text-agro-green hover:opacity-80 transition-opacity line-clamp-2"
+            >
+              {product.title}
+            </Link>
+            
+            {selectedOptions.length > 0 && selectedOptions[0].value !== 'Default Title' && (
+              <ul className="mt-1 text-xs text-gray-500">
+                {selectedOptions.map((option) => (
+                  <li key={option.name}>
+                    {option.name}: {option.value}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="text-[13px] font-bold text-agro-green shrink-0">
+            <ProductPrice price={line?.cost?.totalAmount} />
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between mt-auto pt-2">
           <CartLineQuantity line={line} />
+          <CartLineRemoveButton lineIds={[id]} disabled={!!line.isOptimistic} />
         </div>
       </div>
 
@@ -109,31 +120,34 @@ function CartLineQuantity({line}: {line: CartLine}) {
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
   return (
-    <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
+    <div className="flex items-center border border-gray-200 bg-white w-24 h-8">
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button
-          aria-label="Decrease quantity"
+          aria-label="Зменшити кількість"
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
+          className="w-8 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors text-sm"
         >
-          <span>&#8722; </span>
+          <span>&#8722;</span>
         </button>
       </CartLineUpdateButton>
-      &nbsp;
+      
+      <span className="flex-1 text-center text-[13px] text-gray-800">
+        {quantity}
+      </span>
+      
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
         <button
-          aria-label="Increase quantity"
+          aria-label="Збільшити кількість"
           name="increase-quantity"
           value={nextQuantity}
           disabled={!!isOptimistic}
+          className="w-8 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors text-sm"
         >
           <span>&#43;</span>
         </button>
       </CartLineUpdateButton>
-      &nbsp;
-      <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
 }
@@ -157,8 +171,17 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
-        Remove
+      <button 
+        disabled={disabled} 
+        type="submit"
+        className="flex items-center justify-center text-red-500 hover:text-red-700 disabled:opacity-50 transition-colors w-8 h-8"
+        title="Видалити"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+        </svg>
       </button>
     </CartForm>
   );
