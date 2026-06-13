@@ -3,6 +3,7 @@ import {Await, useLoaderData, Link} from "react-router";
 import type {Route} from './+types/_index';
 import {ProductItem} from '~/components/ProductItem';
 import type {RecommendedProductsQuery} from 'storefrontapi.generated';
+import {useI18n, getLocaleFromCookie} from '~/lib/i18n';
 
 const FEATURES = [
   {
@@ -63,17 +64,28 @@ const ArrowRight = () => (
   </svg>
 );
 
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({data}) => {
+  const locale = (data as any)?.locale || 'uk';
+  const title = locale === 'en' 
+    ? "AgroTrade | Quality Grown with Love" 
+    : "AgroTrade | Якість, що вирощена з любов'ю";
+  const description = locale === 'en'
+    ? "The best fertilizers, seeds, and machinery for your farm. A reliable partner for farmers."
+    : "Найкращі добрива, насіння та техніка для вашого господарства. Надійний партнер для фермерів.";
   return [
-    {title: 'AgroTrade | Якість, що вирощена з любов\'ю'},
-    {name: 'description', content: 'Найкращі добрива, насіння та техніка для вашого господарства. Надійний партнер для фермерів.'}
+    {title},
+    {name: 'description', content: description}
   ];
 };
 
 export async function loader(args: Route.LoaderArgs) {
   const deferredData = loadDeferredData(args);
   const criticalData = await loadCriticalData(args);
-  return {...deferredData, ...criticalData};
+  
+  const cookieHeader = args.request.headers.get('Cookie');
+  const locale = getLocaleFromCookie(cookieHeader);
+
+  return {...deferredData, ...criticalData, locale};
 }
 
 async function loadCriticalData({context}: Route.LoaderArgs) {
@@ -103,13 +115,32 @@ export default function Index() {
   const {collections, recommendedProducts} = useLoaderData<typeof loader>();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const {t} = useI18n();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Дякуємо, ${name}! Запит надіслано! Ми зв'яжемося з вами за телефоном ${phone}`);
+    alert(t('contact_success', {name, phone}));
     setName("");
     setPhone("");
   };
+
+  const features = [
+    {
+      icon: FEATURES[0].icon,
+      title: t('feature_eco_title'),
+      desc: t('feature_eco_desc'),
+    },
+    {
+      icon: FEATURES[1].icon,
+      title: t('feature_delivery_title'),
+      desc: t('feature_delivery_desc'),
+    },
+    {
+      icon: FEATURES[2].icon,
+      title: t('feature_support_title'),
+      desc: t('feature_support_desc'),
+    },
+  ];
 
   // If storefront contains custom collections, render them; otherwise fallback to Figma placeholders
   const renderedCategories = collections && collections.length >= 2 
@@ -118,7 +149,16 @@ export default function Index() {
         handle: c.handle,
         img: c.image?.url || "https://api.builder.io/api/v1/image/assets/TEMP/5fe6ebc6220d2543f64bfb111881f5e001361158?width=536"
       }))
-    : FALLBACK_CATEGORIES;
+    : FALLBACK_CATEGORIES.map((cat, index) => {
+        const key = index === 0 ? 'query_seeds' :
+                    index === 1 ? 'query_fertilizers' :
+                    index === 2 ? 'query_protection' :
+                    'query_machinery';
+        return {
+          ...cat,
+          name: t(key),
+        };
+      });
 
   return (
     <div className="bg-white font-sans text-agro-dark">
@@ -138,17 +178,17 @@ export default function Index() {
         <div className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 w-full py-20">
           <div className="max-w-[700px] flex flex-col gap-6">
             <h1 className="font-montserrat font-bold text-4xl sm:text-5xl lg:text-[56px] leading-tight text-white drop-shadow-sm">
-              Якість, що вирощена з любов'ю
+              {t('hero_title')}
             </h1>
             <p className="text-white/90 text-base sm:text-lg leading-7 max-w-[480px]">
-              Найкращі добрива, насіння та техніка для вашого господарства. Надійний партнер для комерційних фермерів та агро-інвесторів.
+              {t('hero_desc')}
             </p>
             <div className="pt-2">
               <Link
                 to="/collections"
                 className="inline-flex items-center justify-center px-8 py-4 bg-agro-green text-white text-sm font-semibold tracking-[0.7px] rounded border-2 border-transparent hover:bg-[#023d27] transition-colors"
               >
-                Переглянути каталог
+                {t('hero_button')}
               </Link>
             </div>
           </div>
@@ -159,7 +199,7 @@ export default function Index() {
       <section className="bg-agro-bg py-20 border-b border-agro-border/30">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {FEATURES.map((f) => (
+            {features.map((f) => (
               <div
                 key={f.title}
                 className="flex flex-col p-8 rounded border border-agro-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
@@ -182,10 +222,10 @@ export default function Index() {
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16">
           <div className="mb-8">
             <h2 className="font-montserrat font-semibold text-[32px] leading-10 text-agro-dark mb-2">
-              Каталог продукції
+              {t('catalog_title')}
             </h2>
             <p className="text-agro-body text-base leading-6">
-              Оберіть категорію для вашого господарства
+              {t('catalog_desc')}
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -220,17 +260,17 @@ export default function Index() {
           <div className="mb-12 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <h2 className="font-montserrat font-semibold text-3xl leading-10 text-agro-dark mb-3">
-                Рекомендовані товари
+                {t('recommended_title')}
               </h2>
               <p className="text-agro-body text-base">
-                Популярні пропозиції від нашого магазину
+                {t('recommended_desc')}
               </p>
             </div>
             <Link
               to="/collections/all"
               className="text-agro-green font-semibold text-sm hover:underline flex items-center gap-1.5 self-start sm:self-auto"
             >
-              Всі товари
+              {t('all_products')}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
@@ -254,7 +294,7 @@ export default function Index() {
                 if (products.length === 0) {
                   return (
                     <div className="text-center py-10 text-agro-body/60 border border-dashed border-agro-border rounded-lg">
-                      Не знайдено рекомендованих товарів. Опублікуйте товари в каналі продажів Headless.
+                      {t('no_recommended')}
                     </div>
                   );
                 }
@@ -277,27 +317,27 @@ export default function Index() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-5">
               <h2 className="font-montserrat font-semibold text-3xl leading-10 text-agro-dark">
-                Про нас
+                {t('about_title')}
               </h2>
               <p className="text-agro-body text-base leading-7">
-                AgroTrade — це більше, ніж просто магазин. Ми — ваш надійний партнер у світі сучасного агробізнесу. Наша місія полягає в тому, щоб забезпечити українських фермерів інноваційними та високоякісними рішеннями, які сприяють підвищенню врожайності та рентабельності.
+                {t('about_desc_1')}
               </p>
               <p className="text-agro-body text-base leading-7">
-                Ми об'єднуємо передові технології з глибоким розумінням потреб землі, створюючи платформу, де ефективність зустрічається з екологічністю.
+                {t('about_desc_2')}
               </p>
               <div className="inline-flex items-center gap-3 px-5 py-3 rounded border border-agro-brown/20 bg-agro-brown-bg self-start mt-2">
                 <svg width="22" height="21" viewBox="0 0 22 21" fill="none">
                   <path d="M7.6 21L5.7 17.8L2.1 17L2.45 13.3L0 10.5L2.45 7.7L2.1 4L5.7 3.2L7.6 0L11 1.45L14.4 0L16.3 3.2L19.9 4L19.55 7.7L22 10.5L19.55 13.3L19.9 17L16.3 17.8L14.4 21L11 19.55L7.6 21ZM9.95 14.05L15.6 8.4L14.2 6.95L9.95 11.2L7.8 9.1L6.4 10.5L9.95 14.05Z" fill="#7B5731"/>
                 </svg>
                 <span className="text-agro-brown text-sm font-semibold tracking-[0.7px]">
-                  Сертифікована якість
+                  {t('certified_quality')}
                 </span>
               </div>
             </div>
             <div className="rounded border border-agro-border overflow-hidden h-[420px] shadow-sm">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/0799474a335e08da04c77817bc9ebb47408b8c3b?width=1116"
-                alt="Агрономи за роботою"
+                alt={t('about_title')}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -310,29 +350,29 @@ export default function Index() {
         <div className="max-w-[600px] mx-auto px-4 sm:px-8">
           <div className="text-center mb-6">
             <h2 className="font-montserrat font-semibold text-[32px] leading-10 text-agro-dark mb-2">
-              Залишилися питання?
+              {t('contact_title')}
             </h2>
             <p className="text-agro-body text-base leading-6">
-              Зв'яжіться з нашими експертами для отримання індивідуальної консультації.
+              {t('contact_desc')}
             </p>
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 pt-6">
             <div className="flex flex-col gap-1">
               <label className="text-agro-dark text-sm font-semibold tracking-[0.7px]">
-                Ім'я
+                {t('contact_name')}
               </label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Введіть ваше ім'я"
+                placeholder={t('contact_name_placeholder')}
                 className="px-4 py-[14px] rounded border border-[#717973] bg-agro-bg text-agro-dark placeholder-[#6B7280] text-base outline-none focus:border-agro-green transition-colors"
               />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-agro-dark text-sm font-semibold tracking-[0.7px]">
-                Телефон
+                {t('contact_phone')}
               </label>
               <input
                 type="tel"
@@ -348,7 +388,7 @@ export default function Index() {
                 type="submit"
                 className="w-full py-3 px-8 bg-agro-green text-white text-sm font-semibold tracking-[0.7px] rounded hover:bg-[#023d27] transition-colors"
               >
-                Відправити запит
+                {t('contact_submit')}
               </button>
             </div>
           </form>

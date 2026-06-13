@@ -8,6 +8,7 @@ import {
   type PredictiveSearchReturn,
   getEmptyPredictiveSearchResult,
 } from '~/lib/search';
+import {useI18n} from '~/lib/i18n';
 import type {
   RegularSearchQuery,
   PredictiveSearchQuery,
@@ -38,27 +39,28 @@ export async function loader({request, context}: Route.LoaderArgs) {
  */
 export default function SearchPage() {
   const {type, term, result, error} = useLoaderData<typeof loader>();
+  const {t} = useI18n();
   if (type === 'predictive') return null;
 
   return (
     <div className="search">
-      <h1>Search</h1>
+      <h1>{t('search_page_title')}</h1>
       <SearchForm>
         {({inputRef}) => (
           <>
             <input
               defaultValue={term}
               name="q"
-              placeholder="Search…"
+              placeholder={t('search_query_placeholder')}
               ref={inputRef}
               type="search"
             />
             &nbsp;
-            <button type="submit">Search</button>
+            <button type="submit">{t('search_submit')}</button>
           </>
         )}
       </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
+      {error && <p style={{color: 'red'}}>{t('search_error')} {error}</p>}
       {!term || !result?.total ? (
         <SearchResults.Empty />
       ) : (

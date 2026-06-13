@@ -9,6 +9,7 @@ import type {
   CartApiQueryFragment,
   CartLineFragment,
 } from 'storefrontapi.generated';
+import {useI18n} from '~/lib/i18n';
 
 export type CartLine = OptimisticCartLine<CartApiQueryFragment>;
 
@@ -118,12 +119,13 @@ function CartLineQuantity({line}: {line: CartLine}) {
   const {id: lineId, quantity, isOptimistic} = line;
   const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
   const nextQuantity = Number((quantity + 1).toFixed(0));
+  const {t} = useI18n();
 
   return (
     <div className="flex items-center border border-gray-200 bg-white w-24 h-8">
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button
-          aria-label="Зменшити кількість"
+          aria-label={t('decrease_quantity')}
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
@@ -139,7 +141,7 @@ function CartLineQuantity({line}: {line: CartLine}) {
       
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
         <button
-          aria-label="Збільшити кількість"
+          aria-label={t('increase_quantity')}
           name="increase-quantity"
           value={nextQuantity}
           disabled={!!isOptimistic}
@@ -164,6 +166,7 @@ function CartLineRemoveButton({
   lineIds: string[];
   disabled: boolean;
 }) {
+  const {t} = useI18n();
   return (
     <CartForm
       fetcherKey={getUpdateKey(lineIds)}
@@ -175,7 +178,7 @@ function CartLineRemoveButton({
         disabled={disabled} 
         type="submit"
         className="flex items-center justify-center text-red-500 hover:text-red-700 disabled:opacity-50 transition-colors w-8 h-8"
-        title="Видалити"
+        title={t('remove')}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 6h18"></path>

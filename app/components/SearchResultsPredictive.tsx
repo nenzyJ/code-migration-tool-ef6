@@ -7,6 +7,7 @@ import {
   type PredictiveSearchReturn,
 } from '~/lib/search';
 import {useAside} from './Aside';
+import {useI18n} from '~/lib/i18n';
 
 type PredictiveSearchItems = PredictiveSearchReturn['result']['items'];
 
@@ -85,11 +86,12 @@ function SearchResultsPredictiveArticles({
   articles,
   closeSearch,
 }: PartialPredictiveSearchResult<'articles'>) {
+  const {t} = useI18n();
   if (!articles.length) return null;
 
   return (
     <div className="predictive-search-result" key="articles">
-      <h5>Articles</h5>
+      <h5>{t('search_title_articles')}</h5>
       <ul>
         {articles.map((article) => {
           const articleUrl = urlWithTrackingParams({
@@ -126,11 +128,12 @@ function SearchResultsPredictiveCollections({
   collections,
   closeSearch,
 }: PartialPredictiveSearchResult<'collections'>) {
+  const {t} = useI18n();
   if (!collections.length) return null;
 
   return (
     <div className="predictive-search-result" key="collections">
-      <h5>Collections</h5>
+      <h5>{t('search_title_collections')}</h5>
       <ul>
         {collections.map((collection) => {
           const collectionUrl = urlWithTrackingParams({
@@ -167,11 +170,12 @@ function SearchResultsPredictivePages({
   pages,
   closeSearch,
 }: PartialPredictiveSearchResult<'pages'>) {
+  const {t} = useI18n();
   if (!pages.length) return null;
 
   return (
     <div className="predictive-search-result" key="pages">
-      <h5>Pages</h5>
+      <h5>{t('search_title_pages')}</h5>
       <ul>
         {pages.map((page) => {
           const pageUrl = urlWithTrackingParams({
@@ -200,11 +204,12 @@ function SearchResultsPredictiveProducts({
   products,
   closeSearch,
 }: PartialPredictiveSearchResult<'products'>) {
+  const {t} = useI18n();
   if (!products.length) return null;
 
   return (
     <div className="border-t border-gray-200 pt-6 mt-4" key="products">
-      <h3 className="font-semibold text-sm text-gray-500 mb-4">ШВИДКИЙ ПЕРЕГЛЯД</h3>
+      <h3 className="font-semibold text-sm text-gray-500 mb-4">{t('quick_view')}</h3>
       <div className="space-y-4">
         {products.map((product) => {
           const productUrl = urlWithTrackingParams({
@@ -269,13 +274,14 @@ function SearchResultsPredictiveEmpty({
 }: {
   term: React.MutableRefObject<string>;
 }) {
+  const {t} = useI18n();
   if (!term.current) {
     return null;
   }
 
   return (
     <p>
-      No results found for <q>{term.current}</q>
+      {t('no_results_found')} <q>{term.current}</q>
     </p>
   );
 }

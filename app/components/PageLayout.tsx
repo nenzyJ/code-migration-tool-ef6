@@ -16,6 +16,8 @@ import {
 } from '~/components/SearchFormPredictive';
 import {SearchResultsPredictive} from '~/components/SearchResultsPredictive';
 
+import {useI18n} from '~/lib/i18n';
+
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
   footer: Promise<FooterQuery | null>;
@@ -57,9 +59,10 @@ export function PageLayout({
 }
 
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
+  const {t} = useI18n();
   return (
-    <Aside type="cart" heading="CART">
-      <Suspense fallback={<p>Loading cart ...</p>}>
+    <Aside type="cart" heading={t('nav_cart').toUpperCase()}>
+      <Suspense fallback={<p>{t('loading')}</p>}>
         <Await resolve={cart}>
           {(cart) => {
             return <CartMain cart={cart} layout="aside" />;
@@ -71,6 +74,7 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
 }
 
 function SearchAside() {
+  const {t} = useI18n();
   const queriesDatalistId = useId();
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const featuredFetcher = useFetcher<any>();
@@ -79,7 +83,7 @@ function SearchAside() {
     const saved = localStorage.getItem('recentSearches');
     if (saved) {
       try {
-        setRecentSearches(JSON.parse(saved));
+        setRecentSearches(JSON.parse(saved) as string[]);
       } catch (e) {}
     }
     if (featuredFetcher.state === 'idle' && !featuredFetcher.data) {
@@ -99,10 +103,15 @@ function SearchAside() {
     localStorage.removeItem('recentSearches');
   };
 
-  const popularQueries = ['Добрива', 'Насіння', 'Техніка', 'Засоби захисту'];
+  const popularQueries = [
+    t('query_fertilizers'),
+    t('query_seeds'),
+    t('query_machinery'),
+    t('query_protection'),
+  ];
 
   return (
-    <Aside type="search" heading="ПОШУК">
+    <Aside type="search" heading={t('nav_search').toUpperCase()}>
       <div className="p-6">
         <SearchFormPredictive>
           {({fetchResults, goToSearch, inputRef}) => {
@@ -129,7 +138,7 @@ function SearchAside() {
                       }
                     }}
                     onFocus={fetchResults}
-                    placeholder="Пошук товарів..."
+                    placeholder={t('search_placeholder')}
                     ref={inputRef}
                     type="search"
                     list={queriesDatalistId}
@@ -140,7 +149,7 @@ function SearchAside() {
                   onClick={handleSearchSubmit}
                   className="bg-agro-green text-white px-8 py-3 rounded-lg font-medium text-sm active:scale-95 transition-transform"
                 >
-                  Знайти
+                  {t('search_submit')}
                 </button>
               </div>
             );
@@ -164,7 +173,7 @@ function SearchAside() {
             };
 
             if (state === 'loading' && term.current) {
-              return <div>Loading...</div>;
+              return <div>{t('loading')}</div>;
             }
 
             if (!term.current) {
@@ -173,7 +182,7 @@ function SearchAside() {
                   <div className="mb-8 mt-4">
                     <h3 className="font-semibold text-sm text-gray-500 mb-4 flex items-center">
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                      ПОПУЛЯРНІ ЗАПИТИ
+                      {t('popular_queries')}
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {popularQueries.map(q => (
@@ -192,10 +201,10 @@ function SearchAside() {
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="font-semibold text-sm text-gray-500 flex items-center">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        ОСТАННІ ПОШУКИ
+                        {t('recent_searches')}
                       </h3>
                       {recentSearches.length > 0 && (
-                        <button onClick={clearRecentSearches} className="text-xs text-agro-green hover:underline">Очистити</button>
+                        <button onClick={clearRecentSearches} className="text-xs text-agro-green hover:underline">{t('clear')}</button>
                       )}
                     </div>
                     <ul className="space-y-3">
@@ -207,14 +216,14 @@ function SearchAside() {
                           <span className="group-hover:text-agro-green">{s}</span>
                         </li>
                       )) : (
-                        <li className="text-gray-500 text-sm">Немає останніх пошуків</li>
+                        <li className="text-gray-500 text-sm">{t('no_recent_searches')}</li>
                       )}
                     </ul>
                   </div>
 
                   {featuredFetcher.data?.products?.nodes?.length > 0 && (
                     <div className="border-t border-gray-200 pt-6 mt-4">
-                      <h3 className="font-semibold text-sm text-gray-500 mb-4">РЕКОМЕНДОВАНІ ТОВАРИ</h3>
+                      <h3 className="font-semibold text-sm text-gray-500 mb-4">{t('recommended_products_title')}</h3>
                       <div className="space-y-4">
                         {featuredFetcher.data.products.nodes.map((product: any) => {
                           const productUrl = `/products/${product.handle}`;
@@ -288,7 +297,7 @@ function SearchAside() {
                     to={`${SEARCH_ENDPOINT}?q=${term.current}`}
                   >
                     <p>
-                      View all results for <q>{term.current}</q>
+                      {t('view_all_results')} <q>{term.current}</q>
                       &nbsp; →
                     </p>
                   </Link>
@@ -309,10 +318,11 @@ function MobileMenuAside({
   header: PageLayoutProps['header'];
   publicStoreDomain: PageLayoutProps['publicStoreDomain'];
 }) {
+  const {t} = useI18n();
   return (
     header.menu &&
     header.shop.primaryDomain?.url && (
-      <Aside type="mobile" heading="MENU">
+      <Aside type="mobile" heading={t('nav_menu').toUpperCase()}>
         <HeaderMenu viewport="mobile" />
       </Aside>
     )

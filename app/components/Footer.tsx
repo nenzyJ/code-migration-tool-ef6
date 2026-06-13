@@ -1,6 +1,7 @@
 import {Suspense} from 'react';
 import {Await, Link, NavLink} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {useI18n} from '~/lib/i18n';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -13,6 +14,7 @@ export function Footer({
   header,
   publicStoreDomain,
 }: FooterProps) {
+  const {t} = useI18n();
   return (
     <Suspense fallback={
       <footer className="bg-agro-green py-10 text-white border-t border-agro-green/10">
@@ -21,7 +23,7 @@ export function Footer({
             AgroTrade
           </Link>
           <p className="text-white/60 text-sm">
-            © {new Date().getFullYear()} AgroTrade. Всі права захищені.
+            © {new Date().getFullYear()} AgroTrade. {t('rights_reserved')}
           </p>
         </div>
       </footer>
@@ -36,7 +38,7 @@ export function Footer({
                   AgroTrade
                 </Link>
                 <p className="text-white/60 text-sm">
-                  © {new Date().getFullYear()} AgroTrade. Всі права захищені.
+                  © {new Date().getFullYear()} AgroTrade. {t('rights_reserved')}
                 </p>
               </div>
 

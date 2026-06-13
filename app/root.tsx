@@ -18,6 +18,7 @@ import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import agroCss from '~/styles/agro.css?url';
 import {PageLayout} from './components/PageLayout';
+import {getLocaleFromCookie} from '~/lib/i18n';
 
 export type RootLoader = typeof loader;
 
@@ -75,10 +76,13 @@ export async function loader(args: Route.LoaderArgs) {
   const criticalData = await loadCriticalData(args);
 
   const {storefront, env} = args.context;
+  const cookieHeader = args.request.headers.get('Cookie');
+  const locale = getLocaleFromCookie(cookieHeader);
 
   return {
     ...deferredData,
     ...criticalData,
+    locale,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
     shop: getShopAnalytics({
       storefront,
@@ -145,9 +149,16 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
+  let locale = 'uk';
+  try {
+    const data = useRouteLoaderData<RootLoader>('root');
+    if (data?.locale) {
+      locale = data.locale;
+    }
+  } catch (e) {}
 
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />

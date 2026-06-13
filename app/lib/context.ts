@@ -1,6 +1,7 @@
 import {createHydrogenContext} from '@shopify/hydrogen';
 import {AppSession} from '~/lib/session';
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
+import {getLocaleFromCookie} from '~/lib/i18n';
 
 // Define the additional context object
 const additionalContext = {
@@ -40,6 +41,11 @@ export async function createHydrogenRouterContext(
     AppSession.init(request, [env.SESSION_SECRET]),
   ]);
 
+  const cookieHeader = request.headers.get('Cookie');
+  const locale = getLocaleFromCookie(cookieHeader);
+  const language = locale === 'en' ? 'EN' : 'UK';
+  const country = locale === 'en' ? 'US' : 'UA';
+
   const hydrogenContext = createHydrogenContext(
     {
       env,
@@ -48,7 +54,7 @@ export async function createHydrogenRouterContext(
       waitUntil,
       session,
       // Or detect from URL path based on locale subpath, cookies, or any other strategy
-      i18n: {language: 'EN', country: 'US'},
+      i18n: {language: language as any, country: country as any},
       cart: {
         queryFragment: CART_QUERY_FRAGMENT,
       },

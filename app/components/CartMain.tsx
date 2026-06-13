@@ -4,6 +4,7 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {CartLineItem, type CartLine} from '~/components/CartLineItem';
 import {CartSummary} from './CartSummary';
+import {useI18n} from '~/lib/i18n';
 
 export type CartLayout = 'page' | 'aside';
 
@@ -90,6 +91,7 @@ function CartEmpty({
   layout?: CartMainProps['layout'];
 }) {
   const {close} = useAside();
+  const {t} = useI18n();
   return (
     <div hidden={hidden} className="flex flex-col items-center justify-center p-8 text-center min-h-[400px] h-full">
       <div className="w-24 h-24 mb-6 bg-gray-50 rounded-full flex items-center justify-center text-gray-300">
@@ -99,9 +101,9 @@ function CartEmpty({
           <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
         </svg>
       </div>
-      <h3 className="text-xl font-semibold text-gray-800 mb-2">Ваш кошик порожній</h3>
+      <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('empty_cart')}</h3>
       <p className="text-gray-500 mb-8 max-w-[250px]">
-        Схоже, ви ще нічого не додали. Час розпочати покупки!
+        {t('empty_cart_desc')}
       </p>
       <Link 
         to="/collections" 
@@ -109,7 +111,7 @@ function CartEmpty({
         prefetch="viewport"
         className="px-8 py-3 bg-agro-green text-white font-medium rounded-lg hover:bg-agro-green/90 transition-colors shadow-sm w-full max-w-[280px]"
       >
-        Перейти до каталогу
+        {t('go_to_catalog')}
       </Link>
     </div>
   );

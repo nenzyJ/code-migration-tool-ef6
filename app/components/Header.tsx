@@ -7,6 +7,7 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {useI18n} from '~/lib/i18n';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -41,40 +42,39 @@ export function Header({
   );
 }
 
-const NAV_LINKS = [
-  { label: "Каталог", href: "/collections" },
-  { label: "Про нас", href: "/#about" },
-  { label: "Контакти", href: "/#contacts" },
-];
-
 export function HeaderMenu({
   viewport,
 }: {
   viewport: Viewport;
 }) {
   const {close} = useAside();
+  const {t} = useI18n();
 
-
+  const navLinks = [
+    { label: t('nav_catalog'), href: "/collections" },
+    { label: t('nav_about'), href: "/#about" },
+    { label: t('nav_contacts'), href: "/#contacts" },
+  ];
 
   if (viewport === 'mobile') {
     return (
-      <nav className="flex flex-col gap-4 py-4" role="navigation">
+      <nav className="flex flex-col gap-6 p-6" role="navigation">
         <NavLink
           end
           onClick={close}
           prefetch="intent"
           className={({isActive}) =>
-            `text-base font-medium transition-colors ${isActive ? 'text-white font-semibold' : 'text-white/70 hover:text-white'}`
+            `text-lg font-medium transition-colors ${isActive ? 'text-agro-green font-bold' : 'text-gray-900 hover:text-agro-green'}`
           }
           to="/"
         >
-          Головна
+          {t('nav_home')}
         </NavLink>
-        {NAV_LINKS.map((link) => (
+        {navLinks.map((link) => (
           <NavLink
             key={link.href}
             className={({isActive}) =>
-              `text-base font-medium transition-colors ${isActive ? 'text-white font-semibold' : 'text-white/70 hover:text-white'}`
+              `text-lg font-medium transition-colors ${isActive ? 'text-agro-green font-bold' : 'text-gray-900 hover:text-agro-green'}`
             }
             end
             onClick={close}
@@ -90,7 +90,7 @@ export function HeaderMenu({
 
   return (
     <nav className="hidden md:flex items-center gap-8" role="navigation">
-      {NAV_LINKS.map((link) => (
+      {navLinks.map((link) => (
         <NavLink
           className={({isActive}) =>
             `text-white/80 hover:text-white text-sm font-medium tracking-wide transition-colors`
@@ -108,15 +108,44 @@ export function HeaderMenu({
   );
 }
 
+function LanguageSwitcher() {
+  const {locale, changeLocale} = useI18n();
+  return (
+    <div className="flex items-center gap-1 bg-white/10 rounded-full p-1 border border-white/10 text-xs font-semibold select-none">
+      <button
+        onClick={() => changeLocale('uk')}
+        className={`px-2 py-1 rounded-full transition-all cursor-pointer ${
+          locale === 'uk'
+            ? 'bg-white text-agro-green shadow-sm'
+            : 'text-white/85 hover:text-white hover:bg-white/5'
+        }`}
+      >
+        UA
+      </button>
+      <button
+        onClick={() => changeLocale('en')}
+        className={`px-2 py-1 rounded-full transition-all cursor-pointer ${
+          locale === 'en'
+            ? 'bg-white text-agro-green shadow-sm'
+            : 'text-white/85 hover:text-white hover:bg-white/5'
+        }`}
+      >
+        EN
+      </button>
+    </div>
+  );
+}
+
 function HeaderCtas({
   isLoggedIn,
   cart,
 }: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
   return (
-    <nav className="flex items-center gap-4 sm:gap-6" role="navigation">
+    <nav className="flex items-center gap-4 sm:gap-5" role="navigation">
       <SearchToggle />
       <AccountToggle isLoggedIn={isLoggedIn} />
       <CartToggle cart={cart} />
+      <LanguageSwitcher />
       <HeaderMenuMobileToggle />
     </nav>
   );
@@ -124,11 +153,12 @@ function HeaderCtas({
 
 function HeaderMenuMobileToggle() {
   const {open} = useAside();
+  const {t} = useI18n();
   return (
     <button
       className="md:hidden text-white"
       onClick={() => open('mobile')}
-      aria-label="Меню"
+      aria-label={t('nav_menu')}
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M3 6h18M3 12h18M3 18h18" stroke="white" strokeWidth="2" strokeLinecap="round"/>
@@ -139,11 +169,12 @@ function HeaderMenuMobileToggle() {
 
 function SearchToggle() {
   const {open} = useAside();
+  const {t} = useI18n();
   return (
     <button
       className="text-white/80 hover:text-white transition-colors focus:outline-none cursor-pointer"
       onClick={() => open('search')}
-      aria-label="Пошук"
+      aria-label={t('nav_search')}
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="11" cy="11" r="8" />
@@ -154,12 +185,13 @@ function SearchToggle() {
 }
 
 function AccountToggle({isLoggedIn}: {isLoggedIn: HeaderProps['isLoggedIn']}) {
+  const {t} = useI18n();
   return (
     <NavLink
       prefetch="intent"
       to="/account"
       className="text-white/80 hover:text-white transition-colors focus:outline-none"
-      aria-label="Кабінет"
+      aria-label={t('nav_account')}
     >
       <Suspense fallback={
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -174,7 +206,7 @@ function AccountToggle({isLoggedIn}: {isLoggedIn: HeaderProps['isLoggedIn']}) {
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              {loggedIn && <span className="hidden lg:inline text-xs font-semibold">Кабінет</span>}
+              {loggedIn && <span className="hidden lg:inline text-xs font-semibold">{t('nav_account')}</span>}
             </div>
           )}
         </Await>
@@ -186,6 +218,7 @@ function AccountToggle({isLoggedIn}: {isLoggedIn: HeaderProps['isLoggedIn']}) {
 function CartBadge({count}: {count: number | null}) {
   const {open} = useAside();
   const {publish, shop, cart, prevCart} = useAnalytics();
+  const {t} = useI18n();
 
   return (
     <a
@@ -201,7 +234,7 @@ function CartBadge({count}: {count: number | null}) {
           url: window.location.href || '',
         } as CartViewPayload);
       }}
-      aria-label="Кошик"
+      aria-label={t('nav_cart')}
     >
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="21" r="1" />

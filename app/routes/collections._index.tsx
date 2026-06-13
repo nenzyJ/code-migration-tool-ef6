@@ -3,6 +3,7 @@ import type {Route} from './+types/collections._index';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {useI18n} from '~/lib/i18n';
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -44,16 +45,17 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 
 export default function Collections() {
   const {collections} = useLoaderData<typeof loader>();
+  const {t} = useI18n();
 
   return (
     <div className="bg-white font-sans text-agro-dark">
       <section className="py-20 border-b border-agro-border/30 bg-agro-bg">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 text-center">
           <h1 className="font-montserrat font-bold text-4xl sm:text-5xl text-agro-dark mb-4">
-            Категорії товарів
+            {t('categories_title')}
           </h1>
           <p className="text-agro-body text-base sm:text-lg max-w-[800px] mx-auto leading-7">
-            Оберіть необхідну категорію для перегляду товарів
+            {t('categories_desc')}
           </p>
         </div>
       </section>
@@ -91,6 +93,7 @@ function CollectionItem({
   collection: CollectionFragment;
   index: number;
 }) {
+  const {t} = useI18n();
   return (
     <Link
       className="flex flex-col rounded border border-agro-border bg-agro-bg overflow-hidden hover:shadow-md transition-shadow group"
@@ -109,7 +112,7 @@ function CollectionItem({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-agro-body/40 group-hover:scale-105 transition-transform duration-300">
-            Немає зображення
+            {t('no_image')}
           </div>
         )}
       </div>

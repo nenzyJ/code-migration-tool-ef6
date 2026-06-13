@@ -4,6 +4,7 @@ import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductItem} from '~/components/ProductItem';
 import type {CollectionItemFragment} from 'storefrontapi.generated';
+import {useI18n} from '~/lib/i18n';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: `Hydrogen | Products`}];
@@ -50,16 +51,17 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 
 export default function Collection() {
   const {products} = useLoaderData<typeof loader>();
+  const {t} = useI18n();
 
   return (
     <div className="bg-white font-sans text-agro-dark">
       <section className="py-20 border-b border-agro-border/30 bg-agro-bg">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 text-center">
           <h1 className="font-montserrat font-bold text-4xl sm:text-5xl text-agro-dark mb-4">
-            Всі товари
+            {t('all_products')}
           </h1>
           <p className="text-agro-body text-base sm:text-lg max-w-[800px] mx-auto leading-7">
-            Повний каталог нашої продукції для професійного фермерства.
+            {t('all_products_desc')}
           </p>
         </div>
       </section>

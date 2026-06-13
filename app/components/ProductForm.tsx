@@ -7,6 +7,7 @@ import type {
 import {AddToCartButton} from './AddToCartButton';
 import {useAside} from './Aside';
 import type {ProductFragment} from 'storefrontapi.generated';
+import {useI18n} from '~/lib/i18n';
 
 export function ProductForm({
   productOptions,
@@ -17,6 +18,7 @@ export function ProductForm({
 }) {
   const navigate = useNavigate();
   const {open} = useAside();
+  const {t} = useI18n();
   return (
     <div className="flex flex-col gap-6 mb-8">
       {productOptions.map((option) => {
@@ -121,7 +123,7 @@ export function ProductForm({
           }
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-          {selectedVariant?.availableForSale ? 'Додати в кошик' : 'Немає в наявності'}
+          {selectedVariant?.availableForSale ? t('add_to_cart') : t('out_of_stock')}
         </AddToCartButton>
       </div>
     </div>

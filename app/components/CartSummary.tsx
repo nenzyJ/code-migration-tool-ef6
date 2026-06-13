@@ -3,6 +3,7 @@ import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
 import {useEffect, useRef} from 'react';
 import {useFetcher} from 'react-router';
+import {useI18n} from '~/lib/i18n';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -12,11 +13,12 @@ type CartSummaryProps = {
 export function CartSummary({cart, layout}: CartSummaryProps) {
   const className =
     layout === 'page' ? 'cart-summary-page' : 'cart-summary-aside';
+  const {t} = useI18n();
 
   return (
     <div aria-labelledby="cart-summary" className={`${className} flex flex-col gap-4 px-6 py-6 bg-white border-t border-dashed border-gray-200 mt-auto`}>
       <dl className="flex items-center justify-between text-sm font-medium text-agro-green mb-2">
-        <dt>Разом</dt>
+        <dt>{t('cart_total')}</dt>
         <dd className="text-base font-normal">
           {cart?.cost?.subtotalAmount?.amount ? (
             <Money data={cart?.cost?.subtotalAmount} />
@@ -33,6 +35,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
 }
 
 function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
+  const {t} = useI18n();
   if (!checkoutUrl) return null;
 
   return (
@@ -42,7 +45,7 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
         target="_self"
         className="flex items-center justify-center w-full px-6 py-3 bg-agro-green text-white text-[13px] font-bold uppercase rounded-sm hover:opacity-90 transition-opacity"
       >
-        Оформити замовлення
+        {t('checkout')}
       </a>
     </div>
   );
