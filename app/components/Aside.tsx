@@ -66,7 +66,7 @@ export function Aside({
             &#x2715;
           </button>
         </header>
-        <main className="flex-1 overflow-y-auto !m-0">{children}</main>
+        <main className="flex flex-col flex-1 overflow-hidden min-h-0 !m-0">{children}</main>
       </aside>
     </div>
   );

@@ -112,7 +112,7 @@ function SearchAside() {
 
   return (
     <Aside type="search" heading={t('nav_search').toUpperCase()}>
-      <div className="p-6">
+      <div className="p-6 flex-1 overflow-y-auto min-h-0">
         <SearchFormPredictive>
           {({fetchResults, goToSearch, inputRef}) => {
             const handleSearchSubmit = () => {

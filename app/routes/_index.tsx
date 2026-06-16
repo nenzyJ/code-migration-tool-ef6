@@ -356,7 +356,7 @@ export default function Index() {
               {t('contact_desc')}
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 pt-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 pt-6 max-w-[400px] mx-auto w-full">
             <div className="flex flex-col gap-1">
               <label className="text-agro-dark text-sm font-semibold tracking-[0.7px]">
                 {t('contact_name')}

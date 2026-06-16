@@ -58,7 +58,7 @@ export function HeaderMenu({
 
   if (viewport === 'mobile') {
     return (
-      <nav className="flex flex-col gap-6 p-6" role="navigation">
+      <nav className="flex flex-col flex-1 gap-6 p-6 overflow-y-auto h-full" role="navigation">
         <NavLink
           end
           onClick={close}

@@ -51,9 +51,9 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const childrenMap = getLineItemChildrenMap(cart?.lines?.nodes ?? []);
 
   return (
-    <div className={`${className} h-full flex flex-col`}>
+    <div className={`${className} h-full flex flex-col min-h-0`}>
       <CartEmpty hidden={linesCount} layout={layout} />
-      <div className={`cart-details flex flex-col flex-1 ${!linesCount ? 'hidden' : ''}`}>
+      <div className={`cart-details flex flex-col flex-1 min-h-0 ${!linesCount ? 'hidden' : ''}`}>
         <p id="cart-lines" className="sr-only">
           Line items
         </p>
