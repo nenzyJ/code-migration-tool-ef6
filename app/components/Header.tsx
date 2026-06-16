@@ -26,10 +26,10 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-agro-green">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-agro-border/30">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 flex items-center justify-between h-[69px]">
         {/* Logo */}
-        <Link to="/" className="font-montserrat font-bold text-xl text-white tracking-wide">
+        <Link to="/" className="font-montserrat font-bold text-xl text-agro-green tracking-wide">
           AgroTrade
         </Link>
 
@@ -93,7 +93,7 @@ export function HeaderMenu({
       {navLinks.map((link) => (
         <NavLink
           className={({isActive}) =>
-            `text-white/80 hover:text-white text-sm font-medium tracking-wide transition-colors`
+            `${isActive ? 'text-agro-green font-semibold' : 'text-agro-green/75 hover:text-agro-green'} text-sm font-medium tracking-wide transition-colors`
           }
           end
           key={link.href}
@@ -111,13 +111,13 @@ export function HeaderMenu({
 function LanguageSwitcher() {
   const {locale, changeLocale} = useI18n();
   return (
-    <div className="flex items-center gap-1 bg-white/10 rounded-full p-1 border border-white/10 text-xs font-semibold select-none">
+    <div className="flex items-center gap-1 bg-agro-green-bg rounded-full p-1 border border-agro-green/10 text-xs font-semibold select-none">
       <button
         onClick={() => changeLocale('uk')}
         className={`px-2 py-1 rounded-full transition-all cursor-pointer ${
           locale === 'uk'
-            ? 'bg-white text-agro-green shadow-sm'
-            : 'text-white/85 hover:text-white hover:bg-white/5'
+            ? 'bg-agro-green text-white shadow-sm'
+            : 'text-agro-green/75 hover:text-agro-green hover:bg-agro-green/5'
         }`}
       >
         UA
@@ -126,8 +126,8 @@ function LanguageSwitcher() {
         onClick={() => changeLocale('en')}
         className={`px-2 py-1 rounded-full transition-all cursor-pointer ${
           locale === 'en'
-            ? 'bg-white text-agro-green shadow-sm'
-            : 'text-white/85 hover:text-white hover:bg-white/5'
+            ? 'bg-agro-green text-white shadow-sm'
+            : 'text-agro-green/75 hover:text-agro-green hover:bg-agro-green/5'
         }`}
       >
         EN
@@ -156,12 +156,12 @@ function HeaderMenuMobileToggle() {
   const {t} = useI18n();
   return (
     <button
-      className="md:hidden text-white"
+      className="md:hidden text-agro-green cursor-pointer"
       onClick={() => open('mobile')}
       aria-label={t('nav_menu')}
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M3 6h18M3 12h18M3 18h18" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
       </svg>
     </button>
   );
@@ -172,7 +172,7 @@ function SearchToggle() {
   const {t} = useI18n();
   return (
     <button
-      className="text-white/80 hover:text-white transition-colors focus:outline-none cursor-pointer"
+      className="text-agro-green/80 hover:text-agro-green transition-colors focus:outline-none cursor-pointer"
       onClick={() => open('search')}
       aria-label={t('nav_search')}
     >
@@ -190,7 +190,9 @@ function AccountToggle({isLoggedIn}: {isLoggedIn: HeaderProps['isLoggedIn']}) {
     <NavLink
       prefetch="intent"
       to="/account"
-      className="text-white/80 hover:text-white transition-colors focus:outline-none"
+      className={({isActive}) =>
+        `${isActive ? 'text-agro-green font-semibold' : 'text-agro-green/80 hover:text-agro-green'} transition-colors focus:outline-none`
+      }
       aria-label={t('nav_account')}
     >
       <Suspense fallback={
@@ -223,7 +225,7 @@ function CartBadge({count}: {count: number | null}) {
   return (
     <a
       href="/cart"
-      className="relative flex items-center text-white/80 hover:text-white transition-colors focus:outline-none cursor-pointer"
+      className="relative flex items-center text-agro-green/80 hover:text-agro-green transition-colors focus:outline-none cursor-pointer"
       onClick={(e) => {
         e.preventDefault();
         open('cart');
@@ -242,7 +244,7 @@ function CartBadge({count}: {count: number | null}) {
         <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
       </svg>
       {count !== null && count > 0 && (
-        <span className="absolute -top-1.5 -right-2 bg-white text-agro-green text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-agro-green shadow-sm animate-pulse">
+        <span className="absolute -top-1.5 -right-2 bg-agro-green text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
           {count}
         </span>
       )}

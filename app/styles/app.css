@@ -643,3 +643,24 @@ button.reset:hover:not(:has(> *)) {
   gap: 0.75rem;
   flex-wrap: wrap;
 }
+
+/* Override global input border for custom quantity selectors */
+input.qty-input {
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Product Tabs */
+.product-tab {
+  border-bottom: 2px solid transparent !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+.product-tab[data-state="active"] {
+  border-bottom-color: #012D1D !important;
+  color: #012D1D !important;
+}

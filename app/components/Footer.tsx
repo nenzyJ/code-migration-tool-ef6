@@ -17,12 +17,12 @@ export function Footer({
   const {t} = useI18n();
   return (
     <Suspense fallback={
-      <footer className="bg-agro-green py-10 text-white border-t border-agro-green/10">
+      <footer className="bg-white py-10 text-agro-green border-t border-agro-border/30">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <Link to="/" className="font-montserrat font-bold text-lg text-white">
+          <Link to="/" className="font-montserrat font-bold text-lg text-agro-green">
             AgroTrade
           </Link>
-          <p className="text-white/60 text-sm">
+          <p className="text-agro-green/60 text-sm">
             © {new Date().getFullYear()} AgroTrade. {t('rights_reserved')}
           </p>
         </div>
@@ -30,14 +30,14 @@ export function Footer({
     }>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="bg-agro-green py-12 text-white border-t border-agro-green/10">
+          <footer className="bg-white py-12 text-agro-green border-t border-agro-border/30">
             <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 flex flex-col sm:flex-row items-center justify-between gap-8">
               {/* Logo & Copyright */}
               <div className="flex flex-col items-center md:items-start gap-2">
-                <Link to="/" className="font-montserrat font-bold text-xl text-white tracking-wide">
+                <Link to="/" className="font-montserrat font-bold text-xl text-agro-green tracking-wide">
                   AgroTrade
                 </Link>
-                <p className="text-white/60 text-sm">
+                <p className="text-agro-green/60 text-sm">
                   © {new Date().getFullYear()} AgroTrade. {t('rights_reserved')}
                 </p>
               </div>
@@ -81,7 +81,7 @@ function FooterMenu({
             : item.url;
         const isExternal = !url.startsWith('/');
         
-        const linkClass = "text-sm text-white/70 hover:text-white transition-colors hover:underline";
+        const linkClass = "text-sm text-agro-green/75 hover:text-agro-green transition-colors hover:underline";
 
         return isExternal ? (
           <a href={url} key={item.id} rel="noopener noreferrer" target="_blank" className={linkClass}>

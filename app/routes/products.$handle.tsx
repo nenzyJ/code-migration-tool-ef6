@@ -12,8 +12,11 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {AddToCartButton} from '~/components/AddToCartButton';
+import {useAside} from '~/components/Aside';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {useI18n} from '~/lib/i18n';
+import { Badge } from '~/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '~/components/ui/tabs';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
@@ -78,12 +81,12 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
   return {};
 }
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
   const {t} = useI18n();
-  const [activeTab, setActiveTab] = useState('description');
+  const {open} = useAside();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -112,11 +115,10 @@ export default function Product() {
 
   const {title, descriptionHtml} = product;
 
-  const tabs = [
-    { id: 'description', label: t('tab_description') },
-    { id: 'specifications', label: t('tab_specifications') },
-    { id: 'reviews', label: t('tab_reviews') },
-  ];
+  // Quantity state for order block
+  const [quantity, setQuantity] = useState(1);
+  const decreaseQty = useCallback(() => setQuantity((q: number) => Math.max(1, q - 1)), []);
+  const increaseQty = useCallback(() => setQuantity((q: number) => q + 1), []);
 
   return (
     <main className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 py-8 w-full bg-white font-['Inter',sans-serif]">
@@ -132,13 +134,13 @@ export default function Product() {
         <div className="flex flex-col gap-4">
           <div className="relative rounded-lg overflow-hidden bg-gray-100 aspect-[4/3] [&_.product-image]:w-full [&_.product-image]:h-full [&_img]:w-full [&_img]:h-full [&_img]:object-cover">
             <div className="absolute top-4 left-4 flex flex-col items-start gap-2 z-10">
-              <span className="px-3 py-1.5 bg-white/95 text-xs font-semibold tracking-wide rounded-full text-gray-800 border border-gray-200 uppercase">
+              <Badge variant="outline" className="px-3 py-1 bg-white/95 text-xs font-semibold tracking-wide rounded-full text-gray-800 border-gray-200 uppercase">
                 🌾 {t('new_badge')}
-              </span>
-              <span className="px-3 py-1.5 bg-white/95 text-xs font-semibold tracking-wide rounded-full text-green-700 border border-green-200 flex items-center gap-1.5 uppercase">
+              </Badge>
+              <Badge variant="outline" className="px-3 py-1 bg-white/95 text-xs font-semibold tracking-wide rounded-full text-green-700 border-green-200 flex items-center gap-1.5 uppercase">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                 Elite Class Certified
-              </span>
+              </Badge>
             </div>
             <ProductImage image={selectedImage} />
           </div>
@@ -164,44 +166,121 @@ export default function Product() {
 
         {/* Right: Info */}
         <div className="flex flex-col">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#10b981]"></span>
-            <span className="text-[#10b981] text-xs font-bold tracking-[1px] uppercase">
-              {selectedVariant?.availableForSale ? t('in_stock') : t('out_of_stock')}
-            </span>
+          {/* Tags */}
+          <div className="flex items-center gap-2 mb-5">
+            <Badge variant="outline" className="px-3 py-1 bg-[#f4f2ef] text-xs font-semibold tracking-wide rounded-full text-[#7B5731] border-[#e8e3dc] shadow-none">
+              ⭐ Premium Quality
+            </Badge>
+            <Badge variant="outline" className="px-3 py-1 bg-[#eef5e6] text-xs font-semibold tracking-wide rounded-full text-[#3d7a1c] border-[#d5e8c3] shadow-none">
+              🌾 Winter Wheat
+            </Badge>
           </div>
-          
-          <h1 className="text-3xl lg:text-4xl font-bold text-[#191C1D] mb-6 font-['Montserrat',sans-serif] leading-tight">
+
+          <h1 className="text-3xl lg:text-4xl font-bold text-[#191C1D] mb-4 font-['Montserrat',sans-serif] leading-tight">
             {title}
           </h1>
 
-          <div className="text-[32px] font-bold text-[#191C1D] mb-6 flex items-end gap-2 [&_.product-price]:text-[32px]">
-            <ProductPrice
-              price={selectedVariant?.price}
-              compareAtPrice={selectedVariant?.compareAtPrice}
-            />
+          {/* Rating + Reviews + Availability */}
+          <div className="flex items-center gap-3 mb-6 flex-wrap">
+            <div className="flex items-center gap-0.5">
+              {[1,2,3,4,5].map((star) => (
+                <svg key={star} width="16" height="16" viewBox="0 0 24 24" fill={star <= 4 ? '#facc15' : 'none'} stroke="#facc15" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              ))}
+            </div>
+            <span className="text-sm text-gray-500">12 {t('tab_reviews').toLowerCase().replace(/\s*\(.*\)/, '')}</span>
+            <span className="text-gray-300">•</span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#10b981]"></span>
+              <span className="text-sm font-medium text-[#10b981]">
+                {selectedVariant?.availableForSale ? t('in_stock') : t('out_of_stock')}
+              </span>
+            </div>
           </div>
 
-          <div className="mb-8">
+          {/* Order Block */}
+          <div className="border border-gray-200 rounded-xl p-6 mb-8">
+            {/* Price */}
+            <div className="flex items-baseline gap-2">
+              <div className="text-[32px] font-bold text-[#012D1D] [&_.product-price]:text-[32px] [&_.product-price]:font-bold">
+                <ProductPrice
+                  price={selectedVariant?.price}
+                  compareAtPrice={selectedVariant?.compareAtPrice}
+                />
+              </div>
+              <span className="text-sm text-gray-500 font-medium">/ тонна</span>
+            </div>
+
+            {/* Variant Options (if any) */}
             <ProductForm
               productOptions={productOptions}
               selectedVariant={selectedVariant}
             />
-          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-10">
+            {/* Quantity Selector */}
+            <div className="mb-6">
+              <label className="block text-sm font-bold text-[#191C1D] mb-2">Кількість (тонн)</label>
+              <div className="flex items-center border border-gray-300 rounded w-32 overflow-hidden focus-within:border-[#012D1D] focus-within:ring-1 focus-within:ring-[#012D1D] transition-all">
+                <button
+                  type="button"
+                  onClick={decreaseQty}
+                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors outline-none flex-shrink-0"
+                  aria-label="Decrease quantity"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14"/></svg>
+                </button>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="qty-input flex-1 min-w-0 h-10 text-center text-sm font-bold text-[#191C1D] bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button
+                  type="button"
+                  onClick={increaseQty}
+                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors outline-none flex-shrink-0"
+                  aria-label="Increase quantity"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Add to Cart Button (primary) */}
+            <div className="flex flex-col gap-3">
               <AddToCartButton
                 disabled={!selectedVariant || !selectedVariant.availableForSale}
                 onClick={() => {
-                  window.location.href = '/cart';
+                  open('cart');
                 }}
-                className="flex-1 bg-white text-[#012D1D] border-2 border-[#012D1D] py-4 px-6 rounded font-semibold hover:bg-gray-50 transition-colors shadow-sm w-full block text-center"
+                className="w-full bg-[#012D1D] text-white py-3.5 px-6 border-2 border-transparent rounded flex items-center justify-center gap-2 font-semibold hover:bg-[#023d27] transition-colors text-sm"
                 lines={
                   selectedVariant
                     ? [
                         {
                           merchandiseId: selectedVariant.id,
-                          quantity: 1,
+                          quantity,
+                          selectedVariant,
+                        },
+                      ]
+                    : []
+                }
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                {selectedVariant?.availableForSale ? t('add_to_cart') : t('out_of_stock')}
+              </AddToCartButton>
+
+              {/* Buy Now Button (outline) */}
+              <AddToCartButton
+                disabled={!selectedVariant || !selectedVariant.availableForSale}
+                redirectTo="/cart"
+                className="w-full bg-white text-[#012D1D] border-2 border-[#012D1D] py-3.5 px-6 rounded font-semibold hover:bg-[#f4f2ef] transition-colors text-sm text-center"
+                lines={
+                  selectedVariant
+                    ? [
+                        {
+                          merchandiseId: selectedVariant.id,
+                          quantity,
                           selectedVariant,
                         },
                       ]
@@ -210,75 +289,63 @@ export default function Product() {
               >
                 {t('buy_now')}
               </AddToCartButton>
-          </div>
-
-          {/* Features widgets */}
-          <div className="grid grid-cols-2 gap-4 mb-10">
-            <div className="bg-[#F8F9FA] p-4 rounded-xl flex items-start gap-3 border border-gray-100">
-              <div className="bg-white p-2.5 rounded shadow-sm text-blue-400">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5l-5 5-5-5M19 12H5M17 19l-5-5-5 5"/></svg>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-semibold tracking-wide uppercase text-gray-500">{t('winter_hardiness')}</span>
-                <span className="font-bold text-[#191C1D] text-sm">{t('high')} <span className="text-gray-400 font-medium">(8.5/10)</span></span>
-              </div>
-            </div>
-            <div className="bg-[#F8F9FA] p-4 rounded-xl flex items-start gap-3 border border-gray-100">
-              <div className="bg-white p-2.5 rounded shadow-sm text-orange-400">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-semibold tracking-wide uppercase text-gray-500">{t('drought_resistance')}</span>
-                <span className="font-bold text-[#191C1D] text-sm">{t('maximum')} <span className="text-gray-400 font-medium">(9.0/10)</span></span>
-              </div>
             </div>
           </div>
 
           {/* Bottom icons */}
-          <div className="flex items-center justify-between border-t border-gray-200 pt-6 mt-auto px-4">
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-[#f4f2ef] flex items-center justify-center">
+          <div className="flex items-start justify-between px-2">
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <div className="w-11 h-11 rounded-full bg-[#f4f2ef] flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7B5731" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
-              <span className="text-xs font-semibold text-gray-600 tracking-wide">{t('certified')}</span>
+              <span className="text-xs font-bold text-gray-800 tracking-wide">{t('certified')}</span>
+              <span className="text-[11px] text-gray-500">100% Оригінал</span>
             </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-[#f4f2ef] flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <div className="w-11 h-11 rounded-full bg-[#f4f2ef] flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7B5731" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
               </div>
-              <span className="text-xs font-semibold text-gray-600 tracking-wide">{t('days_delivery')}</span>
+              <span className="text-xs font-bold text-gray-800 tracking-wide">{t('days_delivery')}</span>
+              <span className="text-[11px] text-gray-500">По всій Україні</span>
             </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-[#f4f2ef] flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <div className="w-11 h-11 rounded-full bg-[#f4f2ef] flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7B5731" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
               </div>
-              <span className="text-xs font-semibold text-gray-600 tracking-wide">{t('support')}</span>
+              <span className="text-xs font-bold text-gray-800 tracking-wide">{t('support')}</span>
+              <span className="text-[11px] text-gray-500">Консультація агронома</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Tabs Section */}
-      <div className="border-b border-gray-200 mb-8 mt-4">
-        <div className="flex gap-8">
-          {tabs.map((tab) => (
-            <button 
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`pb-4 font-bold text-sm tracking-wide transition-colors relative ${activeTab === tab.id ? 'text-[#012D1D]' : 'text-gray-500 hover:text-gray-800'}`}
+      <Tabs defaultValue="description" className="mb-12 max-w-[800px]">
+        <div className="border-b border-gray-200 mb-8 mt-4 flex">
+          <TabsList className="bg-transparent h-auto p-0 flex justify-start gap-8">
+            <TabsTrigger 
+              value="description" 
+              className="product-tab rounded-none p-0 pb-4 -mb-[1px] font-bold text-sm tracking-wide text-gray-500 hover:text-gray-800 transition-colors relative z-10"
             >
-              {tab.label}
-              {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#012D1D] rounded-t-full"></div>
-              )}
-            </button>
-          ))}
+              {t('tab_description')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="specifications" 
+              className="product-tab rounded-none p-0 pb-4 -mb-[1px] font-bold text-sm tracking-wide text-gray-500 hover:text-gray-800 transition-colors relative z-10"
+            >
+              {t('tab_specifications')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="reviews" 
+              className="product-tab rounded-none p-0 pb-4 -mb-[1px] font-bold text-sm tracking-wide text-gray-500 hover:text-gray-800 transition-colors relative z-10"
+            >
+              {t('tab_reviews')}
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </div>
 
-      {/* Tab Content */}
-      <div className="max-w-[800px] mb-12">
-        {activeTab === 'description' && (
+        {/* Tab Content */}
+        <TabsContent value="description">
           <div className="flex flex-col gap-6 text-[#414844] leading-relaxed">
             <h2 className="text-2xl font-bold text-[#191C1D] mb-1 font-['Montserrat',sans-serif]">{title}</h2>
             
@@ -311,14 +378,14 @@ export default function Product() {
               </div>
             </div>
           </div>
-        )}
-        {activeTab === 'specifications' && (
-          <div className="text-[#414844]">{t('specs_placeholder')}</div>
-        )}
-        {activeTab === 'reviews' && (
-          <div className="text-[#414844]">{t('reviews_placeholder')}</div>
-        )}
-      </div>
+        </TabsContent>
+        <TabsContent value="specifications">
+          <div className="text-[#414844] pt-4">{t('specs_placeholder')}</div>
+        </TabsContent>
+        <TabsContent value="reviews">
+          <div className="text-[#414844] pt-4">{t('reviews_placeholder')}</div>
+        </TabsContent>
+      </Tabs>
 
       <Analytics.ProductView
         data={{

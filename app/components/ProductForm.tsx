@@ -102,30 +102,6 @@ export function ProductForm({
           </div>
         );
       })}
-      
-      <div className="mt-4">
-        <AddToCartButton
-          disabled={!selectedVariant || !selectedVariant.availableForSale}
-          onClick={() => {
-            open('cart');
-          }}
-          className="flex-1 w-full bg-[#012D1D] text-white py-4 px-6 rounded flex items-center justify-center gap-2 font-semibold hover:bg-[#023d27] transition-colors shadow-sm"
-          lines={
-            selectedVariant
-              ? [
-                  {
-                    merchandiseId: selectedVariant.id,
-                    quantity: 1,
-                    selectedVariant,
-                  },
-                ]
-              : []
-          }
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-          {selectedVariant?.availableForSale ? t('add_to_cart') : t('out_of_stock')}
-        </AddToCartButton>
-      </div>
     </div>
   );
 }

@@ -77,9 +77,9 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-white font-['Inter',sans-serif]">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-agro-green">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-agro-border/30">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 flex items-center justify-between h-[69px]">
-          <Link to="/" className="font-['Montserrat',sans-serif] font-bold text-xl text-white tracking-wide">
+          <Link to="/" className="font-['Montserrat',sans-serif] font-bold text-xl text-agro-green tracking-wide">
             AgroTrade
           </Link>
           <nav className="hidden md:flex items-center gap-8">
@@ -87,33 +87,33 @@ export default function Index() {
               <Link
                 key={link.href}
                 to={link.href}
-                className="text-white/80 hover:text-white text-sm font-medium tracking-wide transition-colors"
+                className="text-agro-green/75 hover:text-agro-green text-sm font-medium tracking-wide transition-colors"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
           <button
-            className="md:hidden text-white"
+            className="md:hidden text-agro-green"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Меню"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               {mobileOpen ? (
-                <path d="M18 6L6 18M6 6l12 12" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               ) : (
-                <path d="M3 6h18M3 12h18M3 18h18" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               )}
             </svg>
           </button>
         </div>
         {mobileOpen && (
-          <div className="md:hidden bg-agro-green border-t border-white/10 px-4 pb-4">
+          <div className="md:hidden bg-white border-t border-agro-border/30 px-4 pb-4">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
-                className="block py-3 text-white/80 hover:text-white text-sm font-medium"
+                className="block py-3 text-agro-green/75 hover:text-agro-green text-sm font-medium"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
@@ -293,12 +293,12 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-agro-green py-8">
+      <footer className="bg-white border-t border-agro-border/30 py-8">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-['Montserrat',sans-serif] font-bold text-lg text-white">
+          <span className="font-['Montserrat',sans-serif] font-bold text-lg text-agro-green">
             AgroTrade
           </span>
-          <p className="text-white/60 text-sm text-center">
+          <p className="text-agro-green/60 text-sm text-center">
             © {new Date().getFullYear()} AgroTrade. Всі права захищені.
           </p>
         </div>

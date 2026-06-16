@@ -12,9 +12,9 @@ export default function Placeholder() {
 
   return (
     <div className="min-h-screen bg-white font-['Inter',sans-serif]">
-      <header className="bg-[#012D1D]">
+      <header className="bg-white border-b border-[#012D1D]/10">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 flex items-center h-[69px]">
-          <Link to="/" className="font-['Montserrat',sans-serif] font-bold text-xl text-white tracking-wide">
+          <Link to="/" className="font-['Montserrat',sans-serif] font-bold text-xl text-[#012D1D] tracking-wide">
             AgroTrade
           </Link>
         </div>
