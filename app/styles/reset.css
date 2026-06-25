@@ -55,11 +55,20 @@ p {
 a {
   color: #000;
   text-decoration: none;
+  transition: color 0.2s ease-in-out;
 }
 
 a:hover {
-  text-decoration: underline;
   cursor: pointer;
+  color: var(--color-brand-gold);
+}
+
+button svg, a svg {
+  transition: stroke 0.2s ease-in-out, fill 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+button:hover svg, a:hover svg {
+  color: var(--color-brand-gold);
 }
 
 hr {

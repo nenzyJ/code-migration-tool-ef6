@@ -1,4 +1,4 @@
-import {Suspense} from 'react';
+import {Suspense, useState, useEffect} from 'react';
 import {Await, Link, NavLink, useAsyncValue} from 'react-router';
 import {
   type CartViewPayload,
@@ -25,8 +25,44 @@ export function Header({
   publicStoreDomain,
 }: HeaderProps) {
   const {shop, menu} = header;
+
+  const [scrolled, setScrolled] = useState(false);
+  const [scrollingUp, setScrollingUp] = useState(false);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
+  const {type: asideType} = useAside();
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--header-height', scrolled ? '64px' : '80px');
+  }, [scrolled]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (asideType !== 'closed') return;
+
+      const currentScrollTop = window.scrollY;
+      
+      setLastScrollTop((prevScrollTop) => {
+        setScrollingUp(currentScrollTop < prevScrollTop);
+        return currentScrollTop;
+      });
+
+      setScrolled(currentScrollTop > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll, {passive: true});
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [asideType]);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-agro-border/30">
+    <header 
+      style={{
+        transform: !scrollingUp && scrolled && asideType === 'closed' ? 'translateY(-100%)' : 'translateY(0)'
+      }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b ${
+        scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm border-transparent' : 'bg-white border-agro-border/30'
+      }`}
+    >
       <div className="max-w-[1280px] mx-auto px-4 sm:px-8 lg:px-16 flex items-center justify-between h-[69px]">
         {/* Logo */}
         <Link to="/" className="font-montserrat font-bold text-xl text-agro-green tracking-wide">
@@ -93,7 +129,7 @@ export function HeaderMenu({
       {navLinks.map((link) => (
         <NavLink
           className={({isActive}) =>
-            `${isActive ? 'text-agro-green font-semibold' : 'text-agro-green/75 hover:text-agro-green'} text-sm font-medium tracking-wide transition-colors`
+            `${isActive ? 'text-brand-gold font-semibold' : 'text-agro-green/75'} text-sm font-medium tracking-wide transition-colors duration-200 relative inline-block after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-brand-gold after:transition-all after:duration-300 hover:after:w-full hover:text-brand-gold`
           }
           end
           key={link.href}
@@ -172,7 +208,7 @@ function SearchToggle() {
   const {t} = useI18n();
   return (
     <button
-      className="text-agro-green/80 hover:text-agro-green transition-colors focus:outline-none cursor-pointer"
+      className="text-agro-green/80 flex items-center focus:outline-none cursor-pointer transition-colors duration-200 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-brand-gold after:transition-all after:duration-300 hover:after:w-full hover:text-brand-gold"
       onClick={() => open('search')}
       aria-label={t('nav_search')}
     >
@@ -191,7 +227,7 @@ function AccountToggle({isLoggedIn}: {isLoggedIn: HeaderProps['isLoggedIn']}) {
       prefetch="intent"
       to="/account"
       className={({isActive}) =>
-        `${isActive ? 'text-agro-green font-semibold' : 'text-agro-green/80 hover:text-agro-green'} transition-colors focus:outline-none`
+        `${isActive ? 'text-brand-gold font-semibold' : 'text-agro-green/80'} flex items-center focus:outline-none transition-colors duration-200 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-brand-gold after:transition-all after:duration-300 hover:after:w-full hover:text-brand-gold`
       }
       aria-label={t('nav_account')}
     >
@@ -225,7 +261,7 @@ function CartBadge({count}: {count: number | null}) {
   return (
     <a
       href="/cart"
-      className="relative flex items-center text-agro-green/80 hover:text-agro-green transition-colors focus:outline-none cursor-pointer"
+      className="relative flex items-center text-agro-green/80 focus:outline-none cursor-pointer transition-colors duration-200 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-brand-gold after:transition-all after:duration-300 hover:after:w-full hover:text-brand-gold"
       onClick={(e) => {
         e.preventDefault();
         open('cart');
