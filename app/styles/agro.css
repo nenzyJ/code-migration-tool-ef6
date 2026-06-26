@@ -3041,3 +3041,71 @@ pre,
 [data-side=right] .\[\[data-side\=right\]_\&\]\:cursor-e-resize{
   cursor: e-resize;
 }
+
+/* ─── Product Card Hover Effects ─────────────────────────────────── */
+
+/* Corner bracket shared base */
+.product-card-corner-tl,
+.product-card-corner-br {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.product-card-corner-tl {
+  top: 12px;
+  left: 12px;
+  border-top: 2px solid #C3A343;
+  border-left: 2px solid #C3A343;
+}
+
+.product-card-corner-br {
+  bottom: 12px;
+  right: 12px;
+  border-bottom: 2px solid #C3A343;
+  border-right: 2px solid #C3A343;
+}
+
+.product-card:hover .product-card-corner-tl,
+.product-card:hover .product-card-corner-br {
+  opacity: 1;
+}
+
+/* Overlay */
+.product-card-overlay {
+  background-color: transparent;
+  transition: background-color 0.45s ease;
+}
+
+.product-card:hover .product-card-overlay {
+  background-color: rgba(1, 45, 29, 0.18);
+}
+
+/* View Details bar */
+.product-card-details {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.product-card:hover .product-card-details {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Explore link */
+.product-card-explore {
+  color: #C3A343;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.product-card:hover .product-card-explore {
+  opacity: 1;
+  transform: translateX(0);
+}

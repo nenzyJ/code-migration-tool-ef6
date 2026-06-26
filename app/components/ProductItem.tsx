@@ -1,5 +1,6 @@
 import {Link} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
+
 import type {
   ProductItemFragment,
   CollectionItemFragment,
@@ -7,65 +8,114 @@ import type {
 } from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 
+const GOLD = '#C3A343';
+
+const cornerBase: React.CSSProperties = {
+  position: 'absolute',
+  width: 28,
+  height: 28,
+  opacity: 0,
+  transition: 'opacity 0.4s ease',
+  zIndex: 10,
+  pointerEvents: 'none',
+};
+
 export function ProductItem({
   product,
   loading,
+  hidePrice,
 }: {
   product:
     | CollectionItemFragment
     | ProductItemFragment
     | RecommendedProductFragment;
   loading?: 'eager' | 'lazy';
+  hidePrice?: boolean;
 }) {
   const variantUrl = useVariantUrl(product.handle);
   const image = product.featuredImage;
 
+  const allImages = (product as any).images?.nodes as
+    | {id: string; altText: string | null; url: string; width: number; height: number}[]
+    | undefined;
+  const secondImage = allImages && allImages.length > 1 ? allImages[1] : null;
+
   return (
     <Link
-      className="flex flex-col rounded border border-agro-border bg-white overflow-hidden hover:shadow-lg hover:border-agro-green/30 transition-all duration-300 group"
       key={product.id}
-      prefetch="intent"
       to={variantUrl}
+      prefetch="intent"
+      className="product-card group block"
     >
-      {/* Product Image Wrapper */}
-      <div className="relative aspect-square overflow-hidden bg-agro-gray flex-shrink-0">
+      {/* Image */}
+      <div className="relative aspect-square overflow-hidden bg-agro-gray mb-4">
         {image ? (
-          <Image
-            alt={image.altText || product.title}
-            data={image}
-            loading={loading}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(min-width: 45em) 400px, 100vw"
-          />
+          <>
+            <Image
+              alt={image.altText || product.title}
+              data={image}
+              loading={loading}
+              sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+              className="object-cover w-full h-full transition-opacity duration-500 group-hover:opacity-0"
+            />
+            {secondImage && (
+              <Image
+                alt={secondImage.altText || product.title}
+                data={secondImage}
+                loading={loading}
+                sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                className="absolute inset-0 w-full object-cover h-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              />
+            )}
+
+            {/* Overlay */}
+            <div className="absolute inset-0 transition-colors duration-500 product-card-overlay" />
+
+            {/* View Details — fade + slight slide */}
+            <div className="absolute bottom-0 left-0 right-0 p-3 product-card-details">
+              <div className="bg-white/90 backdrop-blur-sm py-3 px-4 text-center">
+                <span className="text-agro-dark text-sm font-medium tracking-wide">
+                  View Details
+                </span>
+              </div>
+            </div>
+
+            {/* Corner brackets — top-left */}
+            <div className="product-card-corner-tl" />
+            {/* Corner brackets — bottom-right */}
+            <div className="product-card-corner-br" />
+          </>
         ) : (
           <div className="w-full h-full bg-agro-gray flex items-center justify-center text-agro-body/40">
             Немає зображення
           </div>
         )}
-        
-        {/* Hover overlay badge */}
-        <div className="absolute inset-0 bg-agro-green/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4">
-          <span className="w-full py-2 bg-agro-green text-white text-xs font-semibold tracking-wider uppercase text-center rounded shadow">
-            Детальніше
-          </span>
-        </div>
       </div>
 
-      {/* Product Info */}
-      <div className="flex flex-col p-4 flex-grow justify-between gap-2">
-        <h4 className="font-montserrat font-semibold text-base text-agro-dark group-hover:text-agro-green transition-colors line-clamp-2">
+      {/* Info */}
+      <div>
+        <h4 className="text-base text-agro-dark mb-1 transition-colors duration-400 group-hover:text-brand-gold">
           {product.title}
         </h4>
-        
-        <div className="flex items-center justify-between mt-auto pt-2 border-t border-agro-gray">
-          <span className="text-agro-green font-bold text-lg font-sans">
-            <Money data={product.priceRange.minVariantPrice} />
-          </span>
-          
-          {/* Arrow indicator */}
-          <span className="text-agro-green/50 group-hover:text-agro-green transform translate-x-0 group-hover:translate-x-1 transition-all">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="stroke-current">
-              <path d="M6 12L10 8L6 4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <div className="flex justify-between items-center">
+          {!hidePrice && (
+            <Money
+              data={product.priceRange.minVariantPrice}
+              className="text-agro-body text-sm"
+            />
+          )}
+          <span className="product-card-explore flex items-center text-sm gap-1">
+            Explore
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </span>
         </div>
