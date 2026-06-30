@@ -1,4 +1,5 @@
 import {redirect, useLoaderData, Link} from 'react-router';
+import {useState, useEffect, useCallback} from 'react';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
@@ -81,7 +82,7 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
   return {};
 }
 
-import { useState, useEffect, useCallback } from 'react';
+
 
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();

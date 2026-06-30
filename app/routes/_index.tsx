@@ -1,5 +1,6 @@
 import {useState, Suspense} from "react";
 import {Await, useLoaderData, Link} from "react-router";
+import {Image} from '@shopify/hydrogen';
 import type {Route} from './+types/_index';
 import {ProductItem} from '~/components/ProductItem';
 import type {RecommendedProductsQuery} from 'storefrontapi.generated';
@@ -90,7 +91,9 @@ export async function loader(args: Route.LoaderArgs) {
 
 async function loadCriticalData({context}: Route.LoaderArgs) {
   const [{collections}] = await Promise.all([
-    context.storefront.query(COLLECTIONS_QUERY),
+    context.storefront.query(COLLECTIONS_QUERY, {
+      cache: context.storefront.CacheLong(),
+    }),
   ]);
 
   return {
@@ -100,7 +103,9 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
 
 function loadDeferredData({context}: Route.LoaderArgs) {
   const recommendedProducts = context.storefront
-    .query(RECOMMENDED_PRODUCTS_QUERY)
+    .query(RECOMMENDED_PRODUCTS_QUERY, {
+      cache: context.storefront.CacheShort(),
+    })
     .catch((error: Error) => {
       console.error(error);
       return null;
@@ -164,11 +169,19 @@ export default function Index() {
     <div className="bg-white font-sans text-agro-dark">
       {/* Hero Section */}
       <section
-        className="relative flex items-center h-[819px] pt-[69px]"
-        style={{
-          background: `url('https://api.builder.io/api/v1/image/assets/TEMP/552ac0fed311626cee71ed46572f1f4af77bc309?width=2560') lightgray center / cover no-repeat`,
-        }}
+        className="relative flex items-center h-[819px] pt-[69px] overflow-hidden"
       >
+        {/* Hero background image — absolute-positioned for LCP + srcset optimization */}
+        <Image
+          src="https://api.builder.io/api/v1/image/assets/TEMP/552ac0fed311626cee71ed46572f1f4af77bc309"
+          alt=""
+          width={2560}
+          height={819}
+          loading="eager"
+          fetchPriority="high"
+          sizes="100vw"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
         <div 
           className="absolute inset-0"
           style={{
@@ -236,9 +249,13 @@ export default function Index() {
                 className="flex flex-col rounded border border-agro-border bg-agro-bg overflow-hidden hover:shadow-md transition-shadow group"
               >
                 <div className="h-48 overflow-hidden bg-[#E7E8E9]">
-                  <img
+                  <Image
                     src={cat.img}
                     alt={cat.name}
+                    width={536}
+                    height={192}
+                    loading="lazy"
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
@@ -335,9 +352,13 @@ export default function Index() {
               </div>
             </div>
             <div className="rounded border border-agro-border overflow-hidden h-[420px] shadow-sm">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/0799474a335e08da04c77817bc9ebb47408b8c3b?width=1116"
+              <Image
+                src="https://api.builder.io/api/v1/image/assets/TEMP/0799474a335e08da04c77817bc9ebb47408b8c3b"
                 alt={t('about_title')}
+                width={1116}
+                height={420}
+                loading="lazy"
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -435,15 +456,6 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
       altText
       width
       height
-    }
-    images(first: 2) {
-      nodes {
-        id
-        url
-        altText
-        width
-        height
-      }
     }
   }
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)

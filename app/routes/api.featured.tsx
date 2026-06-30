@@ -31,7 +31,8 @@ export async function loader({context}: Route.LoaderArgs) {
         }
       }
     }
-    `
+    `,
+    {cache: storefront.CacheShort()}
   );
   return data;
 }
